@@ -1,6 +1,4 @@
-import { LogType } from '../utils/enums';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { LoggingService } from '../logger/logging.service';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,16 +10,12 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private logger: LoggingService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const user = await this.userRepository.save(createUserDto);
     if (!user) {
-      this.logger.log({
-        type: LogType.WARN,
-        message: 'User not created',
-      });
+      // log
       throw new BadRequestException('User not created');
     }
     return user;
@@ -37,10 +31,7 @@ export class UserService {
       );
       return true;
     } catch (error) {
-      this.logger.log({
-        type: LogType.WARN,
-        message: error.message,
-      });
+      // log
       return false;
     }
   }
@@ -48,10 +39,7 @@ export class UserService {
   async getUser(id: string) {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
-      this.logger.log({
-        type: LogType.WARN,
-        message: 'User not found',
-      });
+      // log
       throw new BadRequestException('User not found');
     }
     return user;
@@ -62,10 +50,7 @@ export class UserService {
       await this.userRepository.delete({ id });
       return true;
     } catch (error) {
-      this.logger.log({
-        type: LogType.WARN,
-        message: error.message,
-      });
+      // log
       return false;
     }
   }
